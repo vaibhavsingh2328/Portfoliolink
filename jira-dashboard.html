@@ -1,0 +1,566 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Vaibhav Singh — Product Delivery Board | Jira</title>
+<style>
+  :root{
+    --jira-blue:#0052CC;
+    --jira-blue-dark:#0747A6;
+    --jira-blue-light:#DEEBFF;
+    --jira-bg:#F4F5F7;
+    --jira-border:#DFE1E6;
+    --jira-text:#172B4D;
+    --jira-subtext:#6B778C;
+    --jira-green:#00875A;
+    --jira-green-bg:#E3FCEF;
+    --jira-purple:#6554C0;
+    --jira-purple-bg:#EAE6FF;
+    --jira-orange:#FF991F;
+    --jira-orange-bg:#FFF0B3;
+    --jira-red:#DE350B;
+    --card-radius:3px;
+  }
+  *{box-sizing:border-box;margin:0;padding:0;}
+  body{
+    font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+    background:var(--jira-bg);
+    color:var(--jira-text);
+    font-size:14px;
+    line-height:1.4;
+  }
+  a{color:inherit;text-decoration:none;}
+
+  /* TOP NAV */
+  .topnav{
+    height:56px;
+    background:#FFFFFF;
+    border-bottom:1px solid var(--jira-border);
+    display:flex;
+    align-items:center;
+    padding:0 16px;
+    gap:20px;
+    position:sticky;
+    top:0;
+    z-index:100;
+  }
+  .jira-logo{
+    display:flex;align-items:center;gap:8px;
+    font-weight:700;font-size:18px;color:var(--jira-blue-dark);
+  }
+  .jira-logo .mark{
+    width:26px;height:26px;background:var(--jira-blue);
+    border-radius:6px;display:flex;align-items:center;justify-content:center;
+    position:relative;
+  }
+  .jira-logo .mark svg{width:16px;height:16px;}
+  .nav-links{display:flex;gap:18px;font-size:14px;font-weight:500;color:var(--jira-text);}
+  .nav-links span{padding:6px 8px;border-radius:3px;cursor:default;}
+  .nav-links span.active{background:var(--jira-blue-light);color:var(--jira-blue-dark);}
+  .topnav-right{margin-left:auto;display:flex;align-items:center;gap:14px;}
+  .search-box{
+    background:var(--jira-bg);border:1px solid var(--jira-border);border-radius:3px;
+    padding:6px 10px;color:var(--jira-subtext);font-size:13px;width:220px;
+  }
+  .avatar{
+    width:32px;height:32px;border-radius:50%;
+    background:linear-gradient(135deg,#0052CC,#6554C0);
+    color:#fff;display:flex;align-items:center;justify-content:center;
+    font-weight:600;font-size:13px;
+  }
+
+  /* LAYOUT */
+  .layout{display:flex;min-height:calc(100vh - 56px);}
+  .sidebar{
+    width:220px;background:#FFFFFF;border-right:1px solid var(--jira-border);
+    padding:16px 0;flex-shrink:0;
+  }
+  .sidebar .project-name{
+    padding:0 16px 14px 16px;font-weight:600;font-size:14px;
+    display:flex;align-items:center;gap:8px;border-bottom:1px solid var(--jira-border);margin-bottom:8px;
+  }
+  .sidebar .project-icon{
+    width:22px;height:22px;border-radius:5px;background:var(--jira-purple);
+    display:flex;align-items:center;justify-content:center;color:#fff;font-size:11px;font-weight:700;
+  }
+  .sidebar-item{
+    padding:9px 16px;font-size:13.5px;color:var(--jira-subtext);
+    display:flex;align-items:center;gap:10px;cursor:default;
+  }
+  .sidebar-item.active{background:var(--jira-blue-light);color:var(--jira-blue-dark);font-weight:600;border-right:3px solid var(--jira-blue);}
+  .sidebar-item .dot{width:8px;height:8px;border-radius:50%;background:currentColor;opacity:0.5;}
+
+  .main{flex:1;padding:22px 28px 60px 28px;max-width:1400px;}
+
+  /* PROFILE HEADER */
+  .profile-header{
+    background:#fff;border:1px solid var(--jira-border);border-radius:6px;
+    padding:22px 26px;margin-bottom:20px;display:flex;gap:20px;align-items:flex-start;flex-wrap:wrap;
+  }
+  .profile-avatar{
+    width:64px;height:64px;border-radius:50%;flex-shrink:0;
+    background:linear-gradient(135deg,#0052CC,#6554C0);
+    display:flex;align-items:center;justify-content:center;color:#fff;font-size:24px;font-weight:700;
+  }
+  .profile-info h1{font-size:22px;font-weight:700;margin-bottom:4px;}
+  .profile-info .role{color:var(--jira-blue-dark);font-weight:600;font-size:13.5px;margin-bottom:8px;}
+  .profile-meta{display:flex;flex-wrap:wrap;gap:14px;font-size:12.5px;color:var(--jira-subtext);}
+  .profile-meta span{display:flex;align-items:center;gap:5px;}
+  .status-chip{
+    margin-left:auto;background:var(--jira-green-bg);color:var(--jira-green);
+    padding:5px 12px;border-radius:20px;font-size:12px;font-weight:700;
+    display:flex;align-items:center;gap:6px;white-space:nowrap;
+  }
+  .status-chip::before{content:"";width:7px;height:7px;border-radius:50%;background:var(--jira-green);}
+
+  /* STATS STRIP */
+  .stats-strip{
+    display:grid;grid-template-columns:repeat(6,1fr);gap:12px;margin-bottom:22px;
+  }
+  .stat-card{
+    background:#fff;border:1px solid var(--jira-border);border-radius:6px;
+    padding:14px 16px;text-align:left;
+  }
+  .stat-card .num{font-size:26px;font-weight:800;color:var(--jira-blue-dark);line-height:1.1;}
+  .stat-card .label{font-size:11.5px;color:var(--jira-subtext);margin-top:4px;font-weight:600;text-transform:uppercase;letter-spacing:.3px;}
+
+  /* BOARD TOOLBAR */
+  .board-toolbar{
+    display:flex;align-items:center;gap:12px;margin-bottom:16px;flex-wrap:wrap;
+  }
+  .board-toolbar h2{font-size:16px;font-weight:700;}
+  .toolbar-pill{
+    background:#fff;border:1px solid var(--jira-border);border-radius:20px;
+    padding:5px 12px;font-size:12.5px;color:var(--jira-subtext);
+  }
+  .avatar-stack{display:flex;margin-left:auto;}
+  .avatar-stack .avatar{width:28px;height:28px;font-size:11px;margin-left:-8px;border:2px solid #fff;}
+
+  /* BOARD COLUMNS */
+  .board{
+    display:grid;
+    grid-template-columns:repeat(5,minmax(220px,1fr));
+    gap:14px;
+    overflow-x:auto;
+    padding-bottom:20px;
+  }
+  .column{
+    background:#EBECF0;border-radius:6px;padding:10px;min-height:200px;
+  }
+  .column-head{
+    display:flex;align-items:center;justify-content:space-between;
+    padding:6px 6px 10px 6px;
+  }
+  .column-head .title{font-size:11.5px;font-weight:700;color:var(--jira-subtext);letter-spacing:.4px;text-transform:uppercase;}
+  .column-head .count{
+    background:#DFE1E6;border-radius:10px;padding:1px 8px;font-size:11px;font-weight:700;color:var(--jira-subtext);
+  }
+  .card{
+    background:#fff;border-radius:4px;box-shadow:0 1px 2px rgba(9,30,66,0.15);
+    padding:10px 12px;margin-bottom:9px;cursor:pointer;
+    border-left:4px solid var(--type-color,var(--jira-blue));
+    transition:box-shadow .15s ease, transform .1s ease;
+  }
+  .card:hover{box-shadow:0 3px 8px rgba(9,30,66,0.25);transform:translateY(-1px);}
+  .card .card-title{font-size:13px;font-weight:600;margin-bottom:8px;color:var(--jira-text);}
+  .card .card-sub{font-size:11.5px;color:var(--jira-subtext);margin-bottom:8px;}
+  .card .card-footer{display:flex;align-items:center;justify-content:space-between;}
+  .type-icon{
+    width:16px;height:16px;border-radius:3px;display:inline-flex;align-items:center;justify-content:center;
+    font-size:10px;color:#fff;font-weight:800;margin-right:5px;background:var(--type-color,var(--jira-blue));
+  }
+  .card-key{font-size:11px;color:var(--jira-subtext);font-weight:600;}
+  .card-badges{display:flex;gap:5px;flex-wrap:wrap;margin-bottom:8px;}
+  .badge-num{
+    background:var(--jira-blue-light);color:var(--jira-blue-dark);
+    font-size:10.5px;font-weight:700;padding:2px 7px;border-radius:10px;
+  }
+  .card-avatar{
+    width:22px;height:22px;border-radius:50%;font-size:9.5px;
+    background:linear-gradient(135deg,#0052CC,#6554C0);color:#fff;
+    display:flex;align-items:center;justify-content:center;font-weight:700;
+  }
+  .points-badge{
+    width:20px;height:20px;border-radius:4px;background:#DFE1E6;
+    display:flex;align-items:center;justify-content:center;font-size:10.5px;font-weight:700;color:var(--jira-subtext);
+  }
+
+  /* skills chips within card */
+  .skill-chip-row{display:flex;flex-wrap:wrap;gap:5px;margin-bottom:8px;}
+  .skill-chip{background:var(--jira-bg);border:1px solid var(--jira-border);border-radius:10px;font-size:10.5px;padding:2px 8px;color:var(--jira-text);}
+
+  /* MODAL */
+  .modal-overlay{
+    display:none;position:fixed;inset:0;background:rgba(9,30,66,0.54);
+    z-index:1000;align-items:flex-start;justify-content:center;padding:40px 20px;overflow-y:auto;
+  }
+  .modal-overlay.open{display:flex;}
+  .modal{
+    background:#fff;border-radius:6px;max-width:820px;width:100%;
+    box-shadow:0 8px 30px rgba(9,30,66,0.3);animation:pop .15s ease;
+  }
+  @keyframes pop{from{opacity:0;transform:translateY(8px);}to{opacity:1;transform:translateY(0);}}
+  .modal-head{
+    display:flex;align-items:center;justify-content:space-between;
+    padding:16px 22px;border-bottom:1px solid var(--jira-border);
+  }
+  .modal-head .breadcrumb{font-size:12.5px;color:var(--jira-subtext);font-weight:600;}
+  .modal-close{
+    cursor:pointer;background:var(--jira-bg);border:none;width:30px;height:30px;border-radius:4px;
+    font-size:16px;color:var(--jira-subtext);
+  }
+  .modal-body{display:flex;gap:0;}
+  .modal-main{flex:1;padding:20px 22px 30px 22px;min-width:0;}
+  .modal-main h2{font-size:20px;font-weight:700;margin-bottom:14px;line-height:1.3;}
+  .modal-section-title{font-size:12px;font-weight:700;color:var(--jira-subtext);text-transform:uppercase;letter-spacing:.4px;margin:18px 0 8px 0;}
+  .modal-desc-list{padding-left:18px;}
+  .modal-desc-list li{margin-bottom:10px;font-size:13.5px;color:var(--jira-text);}
+  .modal-metrics{display:flex;flex-wrap:wrap;gap:8px;}
+  .metric-pill{
+    background:var(--jira-green-bg);color:var(--jira-green);font-weight:700;
+    font-size:12px;padding:5px 11px;border-radius:20px;
+  }
+  .modal-sidebar{
+    width:230px;flex-shrink:0;border-left:1px solid var(--jira-border);
+    padding:20px 18px;background:#FAFBFC;
+  }
+  .field-row{margin-bottom:16px;}
+  .field-label{font-size:11px;color:var(--jira-subtext);font-weight:700;text-transform:uppercase;letter-spacing:.3px;margin-bottom:6px;}
+  .field-value{font-size:13px;color:var(--jira-text);font-weight:600;display:flex;align-items:center;gap:7px;}
+  .status-pill-modal{
+    background:var(--jira-blue-light);color:var(--jira-blue-dark);padding:4px 10px;border-radius:3px;
+    font-size:11.5px;font-weight:700;display:inline-block;
+  }
+
+  @media (max-width:1000px){
+    .stats-strip{grid-template-columns:repeat(3,1fr);}
+    .board{grid-template-columns:repeat(2,minmax(220px,1fr));}
+    .sidebar{display:none;}
+    .modal-body{flex-direction:column;}
+    .modal-sidebar{width:100%;border-left:none;border-top:1px solid var(--jira-border);}
+  }
+  @media (max-width:560px){
+    .stats-strip{grid-template-columns:repeat(2,1fr);}
+    .board{grid-template-columns:1fr;}
+    .nav-links{display:none;}
+  }
+</style>
+</head>
+<body>
+
+<div class="topnav">
+  <div class="jira-logo">
+    <span class="mark"><svg viewBox="0 0 24 24" fill="none"><path d="M11.53 2C11.53 4.34 13.43 6.24 15.77 6.24H17.86V8.26C17.86 10.6 19.76 12.5 22.1 12.5V2.9C22.1 2.4 21.7 2 21.2 2H11.53Z" fill="white"/><path d="M6.36 7.13C6.36 9.47 8.26 11.37 10.6 11.37H12.69V13.39C12.69 15.73 14.59 17.63 16.93 17.63V8.03C16.93 7.53 16.53 7.13 16.03 7.13H6.36Z" fill="white" fill-opacity="0.8"/><path d="M1.19 12.26C1.19 14.6 3.09 16.5 5.43 16.5H7.52V18.52C7.52 20.86 9.42 22.76 11.76 22.76V13.16C11.76 12.66 11.36 12.26 10.86 12.26H1.19Z" fill="white" fill-opacity="0.6"/></svg></span>
+    Jira
+  </div>
+  <div class="nav-links">
+    <span>Your work</span>
+    <span>Projects</span>
+    <span class="active">PM Transition Board</span>
+    <span>Filters</span>
+  </div>
+  <div class="topnav-right">
+    <div class="search-box">🔍 Search career board</div>
+    <div class="avatar">VS</div>
+  </div>
+</div>
+
+<div class="layout">
+  <div class="sidebar">
+    <div class="project-name"><span class="project-icon">VS</span> Vaibhav Singh — PM</div>
+    <div class="sidebar-item active"><span class="dot"></span> Summary</div>
+    <div class="sidebar-item"><span class="dot"></span> Board</div>
+    <div class="sidebar-item"><span class="dot"></span> Backlog</div>
+    <div class="sidebar-item"><span class="dot"></span> Reports</div>
+    <div class="sidebar-item"><span class="dot"></span> Releases</div>
+    <div class="sidebar-item"><span class="dot"></span> Issues</div>
+    <div class="sidebar-item"><span class="dot"></span> Components</div>
+  </div>
+
+  <div class="main">
+
+    <div class="profile-header">
+      <div class="profile-avatar">VS</div>
+      <div class="profile-info">
+        <h1>Vaibhav Singh</h1>
+        <div class="role">Business Analyst → Product Coordinator → Project Manager (in transition)</div>
+        <div class="profile-meta">
+          <span>📍 Indore, MP</span>
+          <span>📞 +91 9340211308</span>
+          <span>✉️ svaibhav423@gmail.com</span>
+          <span>🔗 linkedin.com/in/vaibhav-singh-10736b1a4</span>
+          <span>🏠 Open to Relocation / Hybrid / Remote</span>
+        </div>
+      </div>
+      <div class="status-chip">Sprint-Ready · Immediate Availability</div>
+    </div>
+
+    <div class="stats-strip">
+      <div class="stat-card"><div class="num">3+</div><div class="label">Years Experience</div></div>
+      <div class="stat-card"><div class="num">120+</div><div class="label">User Stories Authored</div></div>
+      <div class="stat-card"><div class="num">200+</div><div class="label">Backlog Items Managed</div></div>
+      <div class="stat-card"><div class="num">15+</div><div class="label">Releases Coordinated</div></div>
+      <div class="stat-card"><div class="num">95%+</div><div class="label">Milestone Adherence</div></div>
+      <div class="stat-card"><div class="num">8</div><div class="label">Certifications</div></div>
+    </div>
+
+    <div class="board-toolbar">
+      <h2>Career Delivery Board</h2>
+      <span class="toolbar-pill">Epic view</span>
+      <span class="toolbar-pill">Group by: Category</span>
+      <div class="avatar-stack">
+        <div class="avatar">VS</div>
+      </div>
+    </div>
+
+    <div class="board" id="board"></div>
+
+  </div>
+</div>
+
+<div class="modal-overlay" id="modalOverlay">
+  <div class="modal">
+    <div class="modal-head">
+      <div class="breadcrumb" id="modalBreadcrumb">VS-101 · Story</div>
+      <button class="modal-close" onclick="closeModal()">✕</button>
+    </div>
+    <div class="modal-body">
+      <div class="modal-main">
+        <h2 id="modalTitle"></h2>
+        <div class="modal-section-title">Description</div>
+        <ul class="modal-desc-list" id="modalDesc"></ul>
+        <div class="modal-section-title" id="modalMetricsTitle">Key Metrics</div>
+        <div class="modal-metrics" id="modalMetrics"></div>
+      </div>
+      <div class="modal-sidebar">
+        <div class="field-row">
+          <div class="field-label">Status</div>
+          <div class="field-value"><span class="status-pill-modal" id="modalStatus">Done</span></div>
+        </div>
+        <div class="field-row">
+          <div class="field-label">Assignee</div>
+          <div class="field-value"><span class="card-avatar" style="width:22px;height:22px;">VS</span> Vaibhav Singh</div>
+        </div>
+        <div class="field-row">
+          <div class="field-label">Organisation</div>
+          <div class="field-value" id="modalOrg"></div>
+        </div>
+        <div class="field-row">
+          <div class="field-label">Timeline</div>
+          <div class="field-value" id="modalDates"></div>
+        </div>
+        <div class="field-row">
+          <div class="field-label">Labels</div>
+          <div class="field-value" id="modalLabels" style="flex-wrap:wrap;gap:5px;"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+const TYPE_COLORS = {
+  epic:"#6554C0", story:"#00875A", task:"#0052CC", subtask:"#FF991F", cert:"#DE350B"
+};
+const TYPE_LABEL = { epic:"E", story:"S", task:"T", subtask:"ST", cert:"C" };
+
+const issues = [
+  // EDUCATION
+  {key:"VS-101",type:"story",col:"education",title:"MBA — Business Analysis & Finance",
+   org:"IPS Academy, Indore, MP",dates:"2024 – 2026",status:"Done",points:8,
+   desc:["Specialised in Business Analysis & Finance, building on hands-on product coordination experience with structured frameworks in strategy, financial analytics, and Agile delivery.","Applied coursework directly to live product coordination and business analyst responsibilities during concurrent full-time employment."],
+   metrics:["Completed"],labels:["Education","Business Analysis","Finance"]},
+  {key:"VS-102",type:"story",col:"education",title:"B.Tech — Mechanical Engineering",
+   org:"Shri Ram Institute of Technology, Jabalpur, MP",dates:"2017 – 2021",status:"Done",points:8,
+   desc:["Foundational engineering degree covering systems thinking, process design, and structured problem-solving — the analytical base later applied to business analysis and Agile delivery."],
+   metrics:["Completed"],labels:["Education","Engineering"]},
+
+  // INTERNSHIPS
+  {key:"VS-103",type:"task",col:"internships",title:"Management Trainee — Manik Motor",
+   org:"Automotive Dealership · Madhya Pradesh",dates:"10 May 2025 – 10 Jul 2025",status:"Done",points:3,
+   desc:["Observed and supported day-to-day operations and management workflows within an automotive dealership, gaining practical exposure to business processes and team coordination.",
+   "Assisted in coordinating between sales, service, and administration departments to ensure smooth operational efficiency.",
+   "Supported the sales team in understanding customer acquisition processes, walk-in lead handling, and post-sale follow-up procedures.",
+   "Analysed dealership performance data and assisted in preparing MIS reports for management review."],
+   metrics:[],labels:["Internship","Operations"]},
+  {key:"VS-104",type:"task",col:"internships",title:"Social Media Marketing Intern — MobiGarage",
+   org:"Remote",dates:"2022",status:"Done",points:2,
+   desc:["Planned and executed social media content strategies to increase brand visibility and audience engagement.",
+   "Analysed post performance metrics to optimise content calendars and posting schedules for maximum reach.",
+   "Collaborated with the marketing team to align social media campaigns with broader business objectives and seasonal promotions.",
+   "Applied learnings from Google Digital Marketing certification to drive measurable improvements in organic reach."],
+   metrics:[],labels:["Internship","Marketing"]},
+  {key:"VS-105",type:"task",col:"internships",title:"Business Analyst Intern — Stanza Living",
+   org:"Indore, MP",dates:"2025",status:"Done",points:3,
+   desc:["Conducted comprehensive funnel analysis to track the student journey and identify drop-off points to improve lead conversion.",
+   "Analysed volume and source of incoming traffic to optimise top-of-funnel activities and increase total occupancy.",
+   "Prepared data-driven reports supporting operational and marketing decisions."],
+   metrics:[],labels:["Internship","Business Analysis"]},
+  {key:"VS-106",type:"task",col:"internships",title:"Production & Manufacturing Intern — Tata Commercials",
+   org:"Jabalpur, MP",dates:"2021",status:"Done",points:2,
+   desc:["Assisted in production workflow observation and operational process understanding.",
+   "Worked with teams to understand manufacturing and quality management processes."],
+   metrics:[],labels:["Internship","Manufacturing"]},
+
+  // EXPERIENCE (Epics)
+  {key:"VS-201",type:"epic",col:"experience",title:"Product Coordinator — Cloudnits",
+   org:"SaaS · Technology Services · Remote",dates:"June 2023 – June 2025",status:"Done",points:21,
+   desc:["Coordinated delivery activities across 4+ cross-functional teams including Product, Engineering, Design, and QA, supporting 15+ product releases and ensuring 95%+ milestone adherence across active delivery streams.",
+   "Gathered and translated stakeholder requirements into 120+ user stories, acceptance criteria, and functional artefacts using Jira and ClickUp, enabling development teams to maintain sprint readiness and reduce requirement ambiguities.",
+   "Managed and refined a backlog of 200+ requirements and enhancement requests, facilitating backlog grooming sessions and prioritising features based on business value, customer impact, and technical dependencies.",
+   "Facilitated 40+ sprint planning sessions, coordinated capacity planning with engineering leads, and tracked release schedules against roadmap commitments, contributing to on-time delivery of key product initiatives.",
+   "Delivered weekly progress reports and sprint dashboards to 10+ internal stakeholders, providing visibility into sprint velocity, release status, risks, and upcoming roadmap milestones.",
+   "Introduced standardised sprint ceremonies, documentation templates, and workflow tracking processes, reducing coordination effort by approximately 20% and improving cross-team communication efficiency."],
+   metrics:["15+ releases","95%+ adherence","120+ stories","200+ backlog items","40+ sprints","-20% overhead"],
+   labels:["Experience","Product","Agile Delivery"]},
+  {key:"VS-202",type:"epic",col:"experience",title:"Project Coordinator — Biorev",
+   org:"Technology Services · Chandigarh",dates:"November 2022 – June 2023",status:"Done",points:13,
+   desc:["Supported Agile project planning activities across 20+ sprint cycles, facilitating backlog preparation, story refinement, and sprint scoping for 100+ requirements and enhancement requests; ensured backlog readiness and reduced requirement-related rework during development.",
+   "Coordinated communication between 10+ stakeholders across development, operations, and client teams, ensuring alignment on delivery timelines, requirement changes, and project priorities throughout the software development lifecycle.",
+   "Tracked, maintained, and monitored 30+ project risks, dependencies, and issue logs, proactively escalating blockers and coordinating mitigation actions that contributed to 95%+ on-time milestone achievement across multiple project initiatives."],
+   metrics:["20+ sprints","100+ requirements","10+ stakeholders","30+ risks tracked","95%+ on-time"],
+   labels:["Experience","Agile","Risk Management"]},
+  {key:"VS-203",type:"epic",col:"experience",title:"Technical Source & Talent Operations Analyst — Collabera Inc.",
+   org:"IT Staffing · Talent Technology · Vadodara",dates:"January 2022 – November 2022",status:"Done",points:13,
+   desc:["Managed and maintained ATS records for 500+ candidate profiles across multiple technology hiring mandates; developed recurring KPI dashboards and funnel reports tracking sourcing effectiveness, submission-to-interview ratios, and pipeline health, enabling data-driven hiring decisions.",
+   "Collaborated with 15+ hiring managers and business stakeholders to gather workforce requirements, define role scope, and establish hiring priorities; translated business needs into structured sourcing strategies and delivery plans.",
+   "Created and maintained 20+ process documents, sourcing playbooks, and role qualification frameworks, standardising recruitment workflows and improving onboarding efficiency for new team members.",
+   "Managed 10–15 concurrent hiring requisitions across multiple business units, consistently achieving 95%+ SLA compliance while balancing competing priorities and maintaining delivery timelines."],
+   metrics:["500+ candidates","15+ hiring managers","20+ docs","95%+ SLA"],
+   labels:["Experience","Analytics","Stakeholder Mgmt"]},
+
+  // SKILLS (Backlog)
+  {key:"VS-301",type:"subtask",col:"skills",title:"Product & Agile",
+   org:"Core Competency",dates:"—",status:"To Do",points:5,
+   desc:["Requirements Elicitation, BRD, SRS, User Stories, Acceptance Criteria, Backlog Management, Sprint Planning, Feature Prioritisation, Release Coordination, UAT, Gap Analysis, As-Is/To-Be Process Mapping."],
+   metrics:[],labels:["Skill Set"],
+   chips:["BRD","SRS","User Stories","Backlog Mgmt","Sprint Planning","UAT","Gap Analysis"]},
+  {key:"VS-302",type:"subtask",col:"skills",title:"Delivery Tools",
+   org:"Core Competency",dates:"—",status:"To Do",points:5,
+   desc:["Jira, ClickUp, Lucidchart, MS Visio, Confluence, Agile/Scrum, Waterfall/SDLC, Stakeholder Sign-off, Risk & Issue Management."],
+   metrics:[],labels:["Skill Set"],
+   chips:["Jira","ClickUp","Confluence","Lucidchart","MS Visio","Scrum","Waterfall"]},
+  {key:"VS-303",type:"subtask",col:"skills",title:"Data & Analytics",
+   org:"Core Competency",dates:"—",status:"To Do",points:5,
+   desc:["SQL, Advanced Excel (VLOOKUP, INDEX-MATCH, Pivot Tables, Power Query), Power BI, KPI Reporting, Pipeline Analytics."],
+   metrics:[],labels:["Skill Set"],
+   chips:["SQL","Power BI","Advanced Excel","Pivot Tables","KPI Reporting"]},
+  {key:"VS-304",type:"subtask",col:"skills",title:"Documentation",
+   org:"Core Competency",dates:"—",status:"To Do",points:3,
+   desc:["SOPs, Process Documentation, executive-grade PowerPoint, MS Word, Microsoft Teams, Outlook."],
+   metrics:[],labels:["Skill Set"],
+   chips:["SOPs","PowerPoint","MS Word","Teams","Outlook"]},
+  {key:"VS-305",type:"subtask",col:"skills",title:"Domain Knowledge",
+   org:"Core Competency",dates:"—",status:"To Do",points:3,
+   desc:["SaaS, Technology Services, IT Staffing, Financial Analysis, Business Analysis, Workforce Solutions."],
+   metrics:[],labels:["Skill Set"],
+   chips:["SaaS","IT Staffing","Financial Analysis","Workforce Solutions"]},
+
+  // CERTIFICATIONS
+  {key:"VS-401",type:"cert",col:"certs",title:"Business Analyst — NSE Academy",
+   org:"National Stock Exchange of India",dates:"Cert. No: NAL/25-26/214764",status:"Done",points:1,
+   desc:["Professional certification in business analysis fundamentals, requirements structuring, and analytical frameworks."],metrics:[],labels:["Certification"]},
+  {key:"VS-402",type:"cert",col:"certs",title:"Fundamentals of BFSI — NSE Academy",
+   org:"National Stock Exchange of India",dates:"Cert. No: NAL/25-26/214746",status:"Done",points:1,
+   desc:["Certification covering Banking, Financial Services & Insurance domain fundamentals."],metrics:[],labels:["Certification"]},
+  {key:"VS-403",type:"cert",col:"certs",title:"AI/ML in Finance — NSE Academy",
+   org:"National Stock Exchange of India",dates:"Cert. No: NAL/25-26/214750",status:"Done",points:1,
+   desc:["Applied AI/ML concepts within financial analytics and decision-making contexts."],metrics:[],labels:["Certification"]},
+  {key:"VS-404",type:"cert",col:"certs",title:"Program on R for Finance — NSE Academy",
+   org:"National Stock Exchange of India",dates:"Cert. No: NAL/25-26/214751",status:"Done",points:1,
+   desc:["Statistical programming in R applied to financial data analysis."],metrics:[],labels:["Certification"]},
+  {key:"VS-405",type:"cert",col:"certs",title:"Financial Analytics for Marketing — NSE Academy",
+   org:"National Stock Exchange of India",dates:"Cert. No: NAL/25-26/214754",status:"Done",points:1,
+   desc:["Analytics techniques applied to marketing and financial decision-making."],metrics:[],labels:["Certification"]},
+  {key:"VS-406",type:"cert",col:"certs",title:"Essentials of Cyber Security — NSE Academy",
+   org:"National Stock Exchange of India",dates:"Cert. No: NAL/25-26/214749",status:"Done",points:1,
+   desc:["Foundational cyber security awareness and best practices."],metrics:[],labels:["Certification"]},
+  {key:"VS-407",type:"cert",col:"certs",title:"Data Analyst — Skillovila",
+   org:"Skillovila",dates:"Cert. No: 38AA4ZTX",status:"Done",points:1,
+   desc:["Applied data analysis techniques including reporting and dashboarding."],metrics:[],labels:["Certification"]},
+  {key:"VS-408",type:"cert",col:"certs",title:"Fundamentals of Digital Marketing — Google Digital Garage",
+   org:"Google",dates:"Cert. No: N9X G2Y S46",status:"Done",points:1,
+   desc:["Google-certified fundamentals of digital marketing strategy and execution."],metrics:[],labels:["Certification"]},
+];
+
+const columns = [
+  {id:"education",title:"Sprint 1 · Education"},
+  {id:"internships",title:"Sprint 2 · Internships"},
+  {id:"experience",title:"Sprint 3 · Experience"},
+  {id:"skills",title:"Backlog · Skills"},
+  {id:"certs",title:"Done · Certifications"},
+];
+
+const board = document.getElementById("board");
+columns.forEach(col=>{
+  const items = issues.filter(i=>i.col===col.id);
+  const colEl = document.createElement("div");
+  colEl.className = "column";
+  colEl.innerHTML = `<div class="column-head"><span class="title">${col.title}</span><span class="count">${items.length}</span></div>`;
+  items.forEach(issue=>{
+    const card = document.createElement("div");
+    card.className = "card";
+    card.style.setProperty("--type-color", TYPE_COLORS[issue.type]);
+    let chipsHtml = "";
+    if(issue.chips){
+      chipsHtml = `<div class="skill-chip-row">${issue.chips.map(c=>`<span class="skill-chip">${c}</span>`).join("")}</div>`;
+    }
+    let badgesHtml = "";
+    if(issue.metrics && issue.metrics.length){
+      badgesHtml = `<div class="card-badges">${issue.metrics.slice(0,3).map(m=>`<span class="badge-num">${m}</span>`).join("")}</div>`;
+    }
+    card.innerHTML = `
+      <div class="card-title">${issue.title}</div>
+      <div class="card-sub">${issue.org}</div>
+      ${chipsHtml}
+      ${badgesHtml}
+      <div class="card-footer">
+        <span><span class="type-icon" style="--type-color:${TYPE_COLORS[issue.type]}">${TYPE_LABEL[issue.type]}</span><span class="card-key">${issue.key}</span></span>
+        <span style="display:flex;gap:6px;align-items:center;">
+          <span class="points-badge">${issue.points}</span>
+          <span class="card-avatar">VS</span>
+        </span>
+      </div>
+    `;
+    card.addEventListener("click", ()=>openModal(issue));
+    colEl.appendChild(card);
+  });
+  board.appendChild(colEl);
+});
+
+function openModal(issue){
+  document.getElementById("modalBreadcrumb").textContent = `${issue.key} · ${issue.type.charAt(0).toUpperCase()+issue.type.slice(1)}`;
+  document.getElementById("modalTitle").textContent = issue.title;
+  document.getElementById("modalDesc").innerHTML = issue.desc.map(d=>`<li>${d}</li>`).join("");
+  const metricsWrap = document.getElementById("modalMetrics");
+  const metricsTitle = document.getElementById("modalMetricsTitle");
+  if(issue.metrics && issue.metrics.length){
+    metricsTitle.style.display="block";
+    metricsWrap.style.display="flex";
+    metricsWrap.innerHTML = issue.metrics.map(m=>`<span class="metric-pill">${m}</span>`).join("");
+  } else if(issue.chips){
+    metricsTitle.textContent = "Skill Coverage";
+    metricsTitle.style.display="block";
+    metricsWrap.style.display="flex";
+    metricsWrap.innerHTML = issue.chips.map(m=>`<span class="metric-pill" style="background:#DEEBFF;color:#0747A6;">${m}</span>`).join("");
+  } else {
+    metricsTitle.style.display="none";
+    metricsWrap.style.display="none";
+  }
+  document.getElementById("modalStatus").textContent = issue.status;
+  document.getElementById("modalOrg").textContent = issue.org;
+  document.getElementById("modalDates").textContent = issue.dates;
+  document.getElementById("modalLabels").innerHTML = issue.labels.map(l=>`<span class="skill-chip">${l}</span>`).join("");
+  document.getElementById("modalOverlay").classList.add("open");
+}
+function closeModal(){
+  document.getElementById("modalOverlay").classList.remove("open");
+}
+document.getElementById("modalOverlay").addEventListener("click",(e)=>{
+  if(e.target.id==="modalOverlay") closeModal();
+});
+document.addEventListener("keydown",(e)=>{ if(e.key==="Escape") closeModal(); });
+</script>
+</body>
+</html>
